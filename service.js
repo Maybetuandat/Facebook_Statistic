@@ -5,7 +5,32 @@ const getAllData = async (req, res) => {
     try {
         const db = await connectdb();
         const collection = db.collection('list_friend_react');
-        const users = await collection.find({ react: 0 }).project({ idUser: 1, name: 1, react: 1, _id: 0 }).toArray();
+        // const users = await collection.find({}).project({ idUser: 1, name: 1, react: 1, _id: 0, comment: 1 }).toArray();
+        const users = await collection.aggregate([
+            {
+                $project: {
+                    idUser: 1,
+                    name: 1,
+                    react: 1,
+                    comment: 1,
+                    total: { $sum: ["$comment", "$react"] }  // Compute the sum of comment and react
+                }
+            },
+            {
+                $sort: { total: 1 }  // Sort by the total in descending order
+            },
+            {
+                $project: {
+                    idUser: 1,
+                    name: 1,
+                    react: 1,
+                    comment: 1,
+                    _id: 0  // Remove the _id field
+                }
+            }
+        ]).toArray();
+
+
         data.list_friend_non_interaction = users;
         data.non_interaction = users.length;
         const total_interaction = await collection.aggregate([
@@ -28,10 +53,7 @@ const getAllData = async (req, res) => {
 
         // Truy vấn số lượng bạn bè mới thêm vào trong khoảng thời gian một tuần trở lại đây
         const count = await collection.countDocuments({
-            time: {
-                $gte: oneWeekAgo,
-                $lte: now
-            }
+            comment: { $gt: 0 }
         });
 
         data.new_friend = count;

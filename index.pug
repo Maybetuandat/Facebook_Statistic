@@ -26,9 +26,9 @@ html(lang="en")
       .card-dashboard
         div
           .number-dashboard=data.new_friend
-          .cardName-dashboard New Friend
+          .cardName-dashboard Total Comment
         .iconBox-dashboard
-          i.fa-solid.fa-user-plus
+          i.fa-solid.fa-comment
       .card-dashboard
         div
           .number-dashboard=data.non_interaction
@@ -53,6 +53,7 @@ html(lang="en")
               td ID
               td NAME
               td INTERACTION
+              td COMMENT
           tbody
             for user, index  in data.list_friend_non_interaction
               tr
@@ -60,6 +61,7 @@ html(lang="en")
                 td=user.idUser
                 td=user.name
                 td=user.react
+                td=user.comment
             // Thêm các hàng dữ liệu khác ở đây...
   input( type ="hidden" data_column = JSON.stringify(data2))
   input( type ="hidden" data_line = JSON.stringify(data3))
